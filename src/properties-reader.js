@@ -191,6 +191,15 @@ PropertiesReader.prototype.getRaw = function (key) {
 };
 
 /**
+ * Returns true, if given key is included in the blacklisted
+ * keys.
+ * @param key key for check, string.
+ */
+function isPrototypePolluted(key) {
+  return ['__proto__', 'prototype', 'constructor'].includes(key);
+}
+
+/**
  * Sets the supplied key in the properties store with the supplied value, the value can be any string representation
  * that would be valid in a properties file (eg: true and false or numbers are converted to their real values).
  *
@@ -208,6 +217,7 @@ PropertiesReader.prototype.set = function (key, value) {
 
    while (expanded.length > 1) {
       var step = expanded.shift();
+      if (isPrototypePolluted(step)) continue;
       if (expanded.length >= 1 && typeof source[step] === 'string') {
          source[step] = {'': source[step]};
       }
